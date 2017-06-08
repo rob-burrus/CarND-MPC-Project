@@ -91,21 +91,32 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-
-          /*
-          * TODO: Calculate steering angle and throttle using MPC.
-          *
-          * Both are in between [-1, 1].
-          *
-          */
-          double steer_value;
-          double throttle_value;
+          
+          vector<double> ptsx_vehicle_coords = ptsx;
+          vector<double> ptsy_vehicle_coords = ptsy;
+          
+          auto coeffs = polyfit(ptsx, ptsy, 3);
+          // The cross track error is calculated by evaluating at polynomial at x, f(x)
+          // and subtracting y.
+          double cte = polyeval(coeffs, x) - y;
+          // Due to the sign starting at 0, the orientation error is -f'(x).
+          // derivative of coeffs[0] + coeffs[1] * x -> coeffs[1]
+          double epsi = psi - atan(coeffs[1]);
+          
+          Eigen::VectorXd state(6);
+          state << x, y, psi, v, cte, epsi;
+          
+          
+          auto vars = mpc.Solve(state, coeffs);
+          
+          double steer_value = vars[0];
+          double throttle_value = vars[1];
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = throttle_value;
+          msgJson["steering_angle"] = steer_value / deg2rad(25);
+          msgJson["throttle"] = throttle_value / deg2rad(25);
 
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
