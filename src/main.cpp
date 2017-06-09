@@ -93,7 +93,6 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
-          v *= 0.44704; // convert to m/s
           double steer_value = j[1]["steering_angle"];
           double throttle_value = j[1]["throttle"];
           
@@ -138,7 +137,6 @@ int main() {
           msgJson["steering_angle"] = -mpc.delta / deg2rad(25);
           msgJson["throttle"] = mpc.a;
 
-          //TODO: To get a better looking projection line: Fit the projection lines using polyfit, and use the coeffs to determine y values for every 1-3units along the car's x-axis 
           
           //.. add (x,y) points to list, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
