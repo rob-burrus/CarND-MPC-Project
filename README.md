@@ -5,14 +5,11 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## The Model
 
-
-
-## Timestep Length and Elasped Duration
-
-## Ploynomial Fitting and MPC Preprocessing 
-
-## Model Predictive Control with latency
-
+In main.cpp, a websocket message is received from the simulator and parsed out into waypoints (ptsx, ptsy), vehicle position (x, y), psi, speed (velocity in mph), steering_angle, and throttle. The waypoints are given and map coordinates and need to be converted into vehicle coordinates for use in the MPC solver 'for(int i =0; i < len; i++){
+            ptsx_vehicle_coords[i] = cos(psi) * (ptsx[i] - px) + sin(psi) * (ptsy[i] - py);
+            ptsy_vehicle_coords[i] = -sin(psi) * (ptsx[i] - px) + cos(psi) * (ptsy[i] - py);
+          
+          }'
 
 
 ## Dependencies
