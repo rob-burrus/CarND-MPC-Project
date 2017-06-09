@@ -70,7 +70,7 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
 int main() {
   uWS::Hub h;
 
-  // MPC is initialized here!
+  
   MPC mpc;
 
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
@@ -106,21 +106,18 @@ int main() {
           
           }
           
-          
-          
           auto coeffs = polyfit(ptsx_vehicle_coords, ptsy_vehicle_coords, 3);
-          
           double cte = polyeval(coeffs, 0);
-          
           double epsi = -atan(coeffs[1]);
           
-          Eigen::VectorXd state(6);
+          
           //account for latency. The car will be in a different position by the time the actuations are implemented. So project where the car will be at that time and use it for the initial state
           //Kinematic model equations - adjusted for the car's perspective, where x, y, and psi = 0
           // x_[t+latency] = v[t] * cos(0) * latency
           // y_[t+latency] = v[t] * sin(0) * latency
           // psi_[t+latency] = v[t] / Lf * delta[t] * latency
           // v_[t+latency] = v[t] + a[t] * latency
+          Eigen::VectorXd state(6);
           px = v * latency;
           py = 0;
           psi = - v / 2.67 * steer_value * latency;
