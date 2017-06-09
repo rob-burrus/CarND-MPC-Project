@@ -6,10 +6,9 @@ Self-Driving Car Engineer Nanodegree Program
 This model is able to successfully drive around the track with reference velocity set to 100mph (Note: on some runs, it loses control). This result was achieved with the following hyper parameteres: 
 * N = 10
 * dt = 0.05
-* cost weights:
- * change_steer_weight = 20,000 --> heavier weight minimizes the change in sequential steering actuations
- * steer_weight = 50 --> minimizes use of the steering actuator
- * all other cost weights = 1
+* change_steer_weight = 20,000 --> heavier weight minimizes the change in sequential steering actuations
+* steer_weight = 50 --> minimizes use of the steering actuator
+* all other cost weights = 1
 * Initial state passed to the MPC solver is adjust for 100 millisecond latency using the kinematic equations with x, y, psi = 0 (discussion below)
 
 
