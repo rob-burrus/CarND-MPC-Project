@@ -16,6 +16,8 @@ using json = nlohmann::json;
 constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
+const double latency = 0.1;
+
 
 // Checks if the SocketIO event has JSON data.
 // If there is data the JSON object in string format will be returned,
@@ -91,52 +93,69 @@ int main() {
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          v *= 0.44704; // convert to m/s
+          double steer_value = j[1]["steering_angle"];
+          double throttle_value = j[1]["throttle"];
           
-          vector<double> ptsx_vehicle_coords = ptsx;
-          vector<double> ptsy_vehicle_coords = ptsy;
+          //convert waypoints from map coordinates to vehicle coordinates
+          int len = ptsx.size();
+          Eigen::VectorXd ptsx_vehicle_coords(len);
+          Eigen::VectorXd ptsy_vehicle_coords(len);
+          for(int i =0; i < len; i++){
+            ptsx_vehicle_coords[i] = cos(psi) * (ptsx[i] - px) + sin(psi) * (ptsy[i] - py);
+            ptsy_vehicle_coords[i] = -sin(psi) * (ptsx[i] - px) + cos(psi) * (ptsy[i] - py);
           
-          auto coeffs = polyfit(ptsx, ptsy, 3);
-          // The cross track error is calculated by evaluating at polynomial at x, f(x)
-          // and subtracting y.
-          double cte = polyeval(coeffs, x) - y;
-          // Due to the sign starting at 0, the orientation error is -f'(x).
-          // derivative of coeffs[0] + coeffs[1] * x -> coeffs[1]
-          double epsi = psi - atan(coeffs[1]);
+          }
+          
+          
+          
+          auto coeffs = polyfit(ptsx_vehicle_coords, ptsy_vehicle_coords, 3);
+          
+          double cte = polyeval(coeffs, 0);
+          
+          double epsi = -atan(coeffs[1]);
           
           Eigen::VectorXd state(6);
-          state << x, y, psi, v, cte, epsi;
+          //account for latency. The car will be in a different position by the time the actuations are implemented. So project where the car will be at that time and use it for the initial state
+          //Kinematic model equations - adjusted for the car's perspective, where x, y, and psi = 0
+          // x_[t+latency] = v[t] * cos(0) * latency
+          // y_[t+latency] = v[t] * sin(0) * latency
+          // psi_[t+latency] = v[t] / Lf * delta[t] * latency
+          // v_[t+latency] = v[t] + a[t] * latency
+          px = v * latency;
+          py = 0;
+          psi = - v / 2.67 * steer_value * latency;
+          v = v + throttle_value * latency;
+          state << px, py, psi, v, cte, epsi;
           
           
-          auto vars = mpc.Solve(state, coeffs);
+          mpc.Solve(state, coeffs);
           
-          double steer_value = vars[0];
-          double throttle_value = vars[1];
 
           json msgJson;
-          // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
+          // Divide by deg2rad(25) before sending the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value / deg2rad(25);
-          msgJson["throttle"] = throttle_value / deg2rad(25);
+          msgJson["steering_angle"] = -mpc.delta / deg2rad(25);
+          msgJson["throttle"] = mpc.a;
 
-          //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals;
-          vector<double> mpc_y_vals;
-
-          //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
+          //TODO: To get a better looking projection line: Fit the projection lines using polyfit, and use the coeffs to determine y values for every 1-3units along the car's x-axis 
+          
+          //.. add (x,y) points to list, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
+          msgJson["mpc_x"] = mpc.proj_X;
+          msgJson["mpc_y"] = mpc.proj_Y;
 
-          msgJson["mpc_x"] = mpc_x_vals;
-          msgJson["mpc_y"] = mpc_y_vals;
-
-          //Display the waypoints/reference line
-          vector<double> next_x_vals;
-          vector<double> next_y_vals;
-
+          
+          vector<double> next_x;
+          vector<double> next_y;
+          for(int i =0; i < ptsx_vehicle_coords.size(); i++){
+            next_x.push_back(ptsx_vehicle_coords[i]);
+            next_y.push_back(ptsy_vehicle_coords[i]);
+          }
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
-
-          msgJson["next_x"] = next_x_vals;
-          msgJson["next_y"] = next_y_vals;
+          msgJson["next_x"] = next_x;
+          msgJson["next_y"] = next_y;
 
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
