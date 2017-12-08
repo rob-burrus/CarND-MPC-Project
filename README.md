@@ -33,7 +33,7 @@ lake_track_waypoints.csv is the track waypoints provided by Udacity. This is the
 ## MPC Setup
 
 ### Prediction Horizon
-The time period is the product of two hyper parameters: N (number of steps) and dt (length of time between each step). These are hyperparameters to tune:
+The time period is the product of two hyper parameters: N (number of steps) and dt (length of time between each step):
 * T (the prediction horizon over which future predictions are made) = N * dt = 0.5 seconds
 * N (number of timesteps in the horizon) = 10
 * dt (time between actuations) = 0.05 seconds
