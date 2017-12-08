@@ -46,11 +46,22 @@ Kinematic Motion model
 ![motion model](motion_model.png)
 
 ### Constraints
-Actuator limitations
+Actuator limitations:
+* Steering angle: limited to +/- 25 degrees
+* Acceleration / deceleration limited to +/- 1
 
 ### Cost Function
-The cost is the sum of several components: cte, epsi, v, steer angle, acceleration, change in steering angle, and change in acceleration. I gave each of these components a weight that scaled their importance to the overall cost. The most important contributor to the cost was the change in steering angle, for which I sclaed by a factor of 20,000. This huge weight heavily penalized the optimization function for making sharp changes in the steering angle. The result was a significantly smoother drive, especially at high speeds.  
-
+The cost is the sum of several components. Each of these components get a weight that scales their importance to the overall cost. The most important contributor to the cost is the change in steering angle, for which I sclaed by a factor of 20,000. This huge weight heavily penalized the optimization function for making sharp changes in the steering angle. The result was a significantly smoother drive, especially at high speeds. There are 3 main components to the cost function. Cost weights are listed below:
+* Reference state costs 
+   * cte = 1
+   * epsi = 1
+   * v = 1
+* Actuator cost to minimize the use of the actuators
+   * steer angle = 50
+   * acceleration = 1
+* Costs associated with the value gap between sequential actions
+   * change in steer angle = 20,000
+   * change in acceleration = 1
 
 ## MPC Program Loop
 1. Convert waypoints from map coordinates to vehicle coordinates for use in the MPC solver.
