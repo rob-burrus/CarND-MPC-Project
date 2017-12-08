@@ -43,7 +43,7 @@ I found that increasing the time period made the car unstable around turns at hi
 ### Vehicle Model
 Kinematic Motion model
 
-![motion model](motion_model.png)
+![motion model](images/motion_model.png)
 
 ### Constraints
 Actuator limitations:
