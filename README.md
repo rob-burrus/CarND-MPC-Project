@@ -7,27 +7,24 @@
 ## Overview
 Model Predictive Control (MPC) frames the task of following a trajectory as an optimization problem. MPC involves simulating different actuator inputs, predicting the resultant trajectory, and selecting the trajectory with the minimum cost. Because the model is only approximate,  only the first actuations for the trajectory are carried out. This acutation command may not result in the trajectory that we predicted. Therefore, a new optimal trajectory is calculated for each vehicle state received by the controller, meaning the trajectory calculated with the previous vehicle state is discarded. This approach is sometimes called "receeding horizon control". 
 
+For this project, Udacity has provided a simulator sends a json message via a web socket that contains the simulated track waypoints, and vehicle state. 
 
-### Vehicle State
-["x"] The car's x position in map coordinates
-
-["y"] The car's y position in map coordinates
-
-["psi"] The car's steering angle
-
-["v"] The car's velocity
-
-["cte"] cross track error
-
-["epsi"] psi error
+### JSON Message received from simulator
+* ["ptsx"] Track waypoint x positions
+* ["ptsy"] Track waypoint y positions
+* ["x"] The car's x position in map coordinates
+* ["y"] The car's y position in map coordinates
+* ["psi"] Car angle 
+* ["speed"]
+* ["steering_angle"] 
+* ["throttle"] 
 
 ### Waypoints
 lake_track_waypoints.csv is the track waypoints provided by Udacity. This is the reference trajectory
 
 ### Actuator Commands
-["delta"] steering angle  
-
-["a"] acceleration
+* ["delta"] steering angle  
+* ["a"] acceleration
 
 
 ## MPC Setup
