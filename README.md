@@ -86,6 +86,7 @@ Ipopt is the C++ library used to optimize the control inputs. It's able to find 
 This model is able to successfully drive around the track with reference velocity set to 100mph (Note: The goal was 60mph. At 100mph, some trials will end with the car running off the road on sharp turns). 
 
 Taking a turn at 97 MPH:
+
 <a href="https://imgflip.com/gif/20qvw2"><img src="https://i.imgflip.com/20qvw2.gif" title="made at imgflip.com"/></a>
 
 
