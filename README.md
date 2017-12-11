@@ -5,9 +5,9 @@
 
 
 ## Overview
-Model Predictive Control (MPC) frames the task of following a trajectory as an optimization problem. MPC involves simulating different actuator inputs, predicting the resultant trajectory, and selecting the trajectory with the minimum cost. Because the model is only approximate,  only the first actuations for the trajectory are carried out. This acutation command may not result in the trajectory that we predicted. Therefore, a new optimal trajectory is calculated for each vehicle state received by the controller, meaning the trajectory calculated with the previous vehicle state is discarded. This approach is sometimes called "receeding horizon control". 
+Model Predictive Control (MPC) frames the task of following a trajectory as an optimization problem. MPC involves simulating different actuator inputs, predicting the resultant trajectory, and selecting the trajectory with the minimum cost. Because the model is only approximate,  only the first actuations for the trajectory are carried out. This actuation command may not result in the trajectory that we predicted. Therefore, a new optimal trajectory is calculated for each vehicle state received by the controller, meaning the trajectory calculated with the previous vehicle state is discarded. This approach is sometimes called "receeding horizon control". 
 
-For this project, Udacity has provided a simulator sends a json message via a web socket that contains the simulated track waypoints, and vehicle state. 
+For this project, Udacity has provided a simulator that sends a json message via a web socket that contains the simulated track waypoints, and vehicle state. 
 
 ### JSON Message received from simulator
 * ["ptsx"] Track waypoint x positions
@@ -48,7 +48,7 @@ Actuator limitations:
 * Acceleration / deceleration limited to +/- 1
 
 ### Cost Function
-The cost is the sum of several components. Each of these components get a weight that scales their importance to the overall cost. The most important contributor to the cost is the change in steering angle, for which I sclaed by a factor of 20,000. This huge weight heavily penalized the optimization function for making sharp changes in the steering angle. The result was a significantly smoother drive, especially at high speeds. There are 3 main components to the cost function. Cost weights are listed below:
+The cost is the sum of several components. Each of these components gets a weight that scales their importance to the overall cost. The most important contributor to the cost is the change in steering angle, for which I sclaed by a factor of 20,000. This huge weight heavily penalized the optimization function for making sharp changes in the steering angle. The result was a significantly smoother drive, especially at high speeds. There are 3 main components to the cost function. Cost weights are listed below:
 * Reference state costs 
    * cte = 1
    * epsi = 1
